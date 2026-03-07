@@ -25,14 +25,13 @@ const RankingTab = () => {
         </div>
       ) : (
         <>
-          {/* Top 3 */}
           {ranking.length > 0 && (
             <div className="overflow-hidden rounded-lg border border-border bg-card">
               {ranking.slice(0, 3).map((entry, i) => (
                 <div
                   key={i}
                   className={`flex items-center gap-3 px-4 py-3 ${
-                    entry.name === currentUser ? "bg-primary/10" : ""
+                    currentUser && entry.cpf === currentUser.cpf ? "bg-primary/10" : ""
                   } ${i < 2 ? "border-b border-border" : ""}`}
                 >
                   <span className="text-xl">{medals[i]}</span>
@@ -49,7 +48,6 @@ const RankingTab = () => {
             </div>
           )}
 
-          {/* Rest */}
           {ranking.length > 3 && (
             <div className="overflow-hidden rounded-lg border border-border">
               <div className="grid grid-cols-[40px_1fr_60px_60px] gap-2 border-b border-border bg-secondary px-4 py-2 text-xs font-semibold text-muted-foreground">
@@ -62,11 +60,11 @@ const RankingTab = () => {
                 <div
                   key={i + 3}
                   className={`grid grid-cols-[40px_1fr_60px_60px] gap-2 px-4 py-2.5 text-sm ${
-                    entry.name === currentUser
+                    currentUser && entry.cpf === currentUser.cpf
                       ? "bg-primary/10"
                       : i % 2 === 0
                       ? "bg-card"
-                      : "bg-surface-alt"
+                      : "bg-secondary/50"
                   }`}
                 >
                   <span className="font-display font-bold text-muted-foreground">{i + 4}º</span>
@@ -80,15 +78,14 @@ const RankingTab = () => {
             </div>
           )}
 
-          {/* Current user position */}
-          {currentUser && ranking.some((r) => r.name === currentUser) && (
+          {currentUser && ranking.some((r) => r.cpf === currentUser.cpf) && (
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-center">
               <p className="text-sm text-foreground">
                 Sua posição:{" "}
                 <span className="font-display font-bold text-primary">
-                  {ranking.findIndex((r) => r.name === currentUser) + 1}º lugar
+                  {ranking.findIndex((r) => r.cpf === currentUser.cpf) + 1}º lugar
                 </span>{" "}
-                ({ranking.find((r) => r.name === currentUser)?.percentage}%)
+                ({ranking.find((r) => r.cpf === currentUser.cpf)?.percentage}%)
               </p>
             </div>
           )}

@@ -6,20 +6,21 @@ import CourseTab from "@/components/CourseTab";
 import QuizTab from "@/components/QuizTab";
 import ResultScreen from "@/components/ResultScreen";
 import RankingTab from "@/components/RankingTab";
-import { getUser, setUser } from "@/lib/store";
+import AdminTab from "@/components/AdminTab";
+import { getUser, setUser, type UserData } from "@/lib/store";
 
 const Index = () => {
-  const [userName, setUserName] = useState<string | null>(getUser());
+  const [userData, setUserData] = useState<UserData | null>(getUser());
   const [activeTab, setActiveTab] = useState<TabId>("curso");
   const [quizResult, setQuizResult] = useState<{ score: number; total: number } | null>(null);
 
-  const handleLogin = useCallback((name: string) => {
-    setUser(name);
-    setUserName(name);
+  const handleLogin = useCallback((user: UserData) => {
+    setUser(user);
+    setUserData(user);
   }, []);
 
   const handleLogout = useCallback(() => {
-    setUserName(null);
+    setUserData(null);
     setActiveTab("curso");
     setQuizResult(null);
   }, []);
@@ -28,13 +29,13 @@ const Index = () => {
     setQuizResult({ score, total });
   }, []);
 
-  if (!userName) {
+  if (!userData) {
     return <LoginScreen onLogin={handleLogin} />;
   }
 
   return (
     <div className="min-h-screen bg-background pb-16">
-      <Header userName={userName} onLogout={handleLogout} />
+      <Header userName={userData.nome} onLogout={handleLogout} />
 
       <main className="mx-auto max-w-[600px]">
         {activeTab === "curso" && (
@@ -55,12 +56,18 @@ const Index = () => {
           />
         )}
         {activeTab === "ranking" && <RankingTab />}
+        {activeTab === "admin" && userData.isAdmin && <AdminTab />}
       </main>
 
-      <BottomTabs active={activeTab} onChange={(tab) => {
-        if (tab !== "quiz") setQuizResult(null);
-        setActiveTab(tab);
-      }} />
+      <BottomTabs
+        active={activeTab}
+        onChange={(tab) => {
+          if (tab !== "quiz") setQuizResult(null);
+          if (tab === "admin" && !userData.isAdmin) return;
+          setActiveTab(tab);
+        }}
+        isAdmin={userData.isAdmin}
+      />
     </div>
   );
 };
