@@ -1,33 +1,59 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Star, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { isAdminCredentials } from "@/lib/store";
+import type { UserData } from "@/lib/store";
 
 interface LoginScreenProps {
-  onLogin: (name: string) => void;
+  onLogin: (user: UserData) => void;
 }
 
-const testimonials = [
-  {
-    text: "Treinamento muito prático, já apliquei no setor de frios.",
-    author: "Bruce Chan",
-    role: "Gerente",
-  },
-  {
-    text: "Conteúdo relevante para o dia a dia do supermercado.",
-    author: "Naomi Bull",
-    role: "Gerente",
-  },
-];
+function formatCPF(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+}
+
+function formatDate(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+function cleanCPF(cpf: string): string {
+  return cpf.replace(/\D/g, "");
+}
 
 const LoginScreen = ({ onLogin }: LoginScreenProps) => {
-  const [name, setName] = useState("");
+  const [nome, setNome] = useState("");
+  const [cpf, setCpf] = useState("");
+  const [nascimento, setNascimento] = useState("");
+  const [error, setError] = useState("");
+
+  const cpfDigits = cleanCPF(cpf);
+  const dateDigits = nascimento.replace(/\D/g, "");
+  const isValid = nome.trim().length >= 2 && cpfDigits.length === 11 && dateDigits.length === 8;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (name.trim().length >= 2) {
-      onLogin(name.trim());
-    }
+    setError("");
+
+    if (!isValid) return;
+
+    const cleanedCpf = cpfDigits;
+    const formattedDate = nascimento;
+    const admin = isAdminCredentials(cleanedCpf, formattedDate);
+
+    onLogin({
+      nome: nome.trim(),
+      cpf: cleanedCpf,
+      nascimento: formattedDate,
+      isAdmin: admin,
+    });
   };
 
   return (
@@ -52,19 +78,50 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="mb-1.5 block font-display text-sm font-medium text-foreground">
-                Nome
+                Nome Completo
               </label>
               <Input
                 type="text"
                 placeholder="Seu nome completo"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
                 className="border-border bg-secondary text-foreground placeholder:text-muted-foreground"
               />
             </div>
+            <div>
+              <label className="mb-1.5 block font-display text-sm font-medium text-foreground">
+                CPF
+              </label>
+              <Input
+                type="text"
+                inputMode="numeric"
+                placeholder="000.000.000-00"
+                value={cpf}
+                onChange={(e) => setCpf(formatCPF(e.target.value))}
+                className="border-border bg-secondary text-foreground placeholder:text-muted-foreground"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 block font-display text-sm font-medium text-foreground">
+                Data de Nascimento
+              </label>
+              <Input
+                type="text"
+                inputMode="numeric"
+                placeholder="DD/MM/AAAA"
+                value={nascimento}
+                onChange={(e) => setNascimento(formatDate(e.target.value))}
+                className="border-border bg-secondary text-foreground placeholder:text-muted-foreground"
+              />
+            </div>
+
+            {error && (
+              <p className="text-sm text-destructive">{error}</p>
+            )}
+
             <Button
               type="submit"
-              disabled={name.trim().length < 2}
+              disabled={!isValid}
               className="w-full bg-primary font-display font-semibold text-primary-foreground hover:bg-nagumo-red-hover"
               size="lg"
             >
@@ -73,28 +130,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
           </form>
           <div className="mt-3 flex items-start gap-2 text-xs text-muted-foreground">
             <AlertCircle size={14} className="mt-0.5 shrink-0" />
-            <span>Use seu nome completo cadastrado</span>
-          </div>
-        </div>
-
-        {/* Testimonials */}
-        <div className="rounded-lg border border-border bg-card p-5">
-          <div className="mb-3 flex items-center gap-2">
-            <Star size={16} className="text-primary" />
-            <h3 className="font-display text-sm font-semibold text-foreground">
-              Avaliações dos Treinamentos
-            </h3>
-          </div>
-          <div className="space-y-4">
-            {testimonials.map((t, i) => (
-              <div key={i} className="text-sm">
-                <p className="italic text-muted-foreground">"{t.text}"</p>
-                <p className="mt-1 font-display text-xs font-semibold text-foreground">
-                  — {t.author},{" "}
-                  <span className="font-normal text-muted-foreground">{t.role}</span>
-                </p>
-              </div>
-            ))}
+            <span>Use seu CPF e data de nascimento para acessar</span>
           </div>
         </div>
       </div>

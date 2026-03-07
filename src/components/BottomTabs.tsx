@@ -1,19 +1,24 @@
-import { Video, FileText, Trophy } from "lucide-react";
+import { Video, FileText, Trophy, Shield } from "lucide-react";
 
-export type TabId = "curso" | "quiz" | "ranking";
+export type TabId = "curso" | "quiz" | "ranking" | "admin";
 
 interface BottomTabsProps {
   active: TabId;
   onChange: (tab: TabId) => void;
+  isAdmin?: boolean;
 }
 
-const tabs: { id: TabId; label: string; icon: typeof Video }[] = [
+const baseTabs: { id: TabId; label: string; icon: typeof Video }[] = [
   { id: "curso", label: "Curso", icon: Video },
   { id: "quiz", label: "Quiz", icon: FileText },
   { id: "ranking", label: "Ranking", icon: Trophy },
 ];
 
-const BottomTabs = ({ active, onChange }: BottomTabsProps) => {
+const adminTab = { id: "admin" as TabId, label: "Admin", icon: Shield };
+
+const BottomTabs = ({ active, onChange, isAdmin }: BottomTabsProps) => {
+  const tabs = isAdmin ? [...baseTabs, adminTab] : baseTabs;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card">
       <div className="mx-auto flex max-w-[600px] items-center justify-around">

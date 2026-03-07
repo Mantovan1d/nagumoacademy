@@ -52,7 +52,6 @@ const QuizTab = ({ onComplete }: QuizTabProps) => {
     setSelected(null);
 
     if (isLast) {
-      // Calculate score
       let score = 0;
       newAnswers.forEach((ans, i) => {
         if (ans === questions[i].correta) score++;
@@ -61,9 +60,11 @@ const QuizTab = ({ onComplete }: QuizTabProps) => {
       const isFirstAttempt = attempts === 0;
       incrementAttempts();
 
-      if (isFirstAttempt) {
+      const user = getUser();
+      if (isFirstAttempt && user) {
         addToRanking({
-          name: getUser() || "Anônimo",
+          name: user.nome,
+          cpf: user.cpf,
           loja: ["Centro", "Norte", "Sul", "Leste", "Oeste"][Math.floor(Math.random() * 5)],
           score,
           total: questions.length,
@@ -95,7 +96,6 @@ const QuizTab = ({ onComplete }: QuizTabProps) => {
         </p>
       </div>
 
-      {/* Question Card */}
       <div className="rounded-lg border border-border bg-card p-5">
         <p className="mb-1 text-xs font-semibold text-muted-foreground">
           Pergunta {currentQ + 1}/{questions.length}
@@ -154,7 +154,6 @@ const QuizTab = ({ onComplete }: QuizTabProps) => {
         </Button>
       </div>
 
-      {/* Progress */}
       <div className="space-y-1">
         <div className="h-1.5 overflow-hidden rounded-full bg-secondary">
           <div
