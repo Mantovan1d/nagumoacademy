@@ -1,6 +1,7 @@
 import { User, LogOut, Moon, Sun } from "lucide-react";
 import { clearUser, getTheme, setTheme } from "@/lib/store";
 import { useState } from "react";
+import nagumoLogo from "@/assets/nagumo-logo.png";
 
 interface HeaderProps {
   userName: string;
@@ -20,10 +21,7 @@ const Header = ({ userName, onLogout }: HeaderProps) => {
     <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
       <div className="mx-auto flex max-w-[600px] items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="font-display text-lg font-bold tracking-tight">
-            <span className="text-primary">NAGUMO</span>{" "}
-            <span className="text-foreground">ACADEMY</span>
-          </span>
+          <img src={nagumoLogo} alt="Supermercados Nagumo" className="h-8" />
         </div>
         <div className="flex items-center gap-2">
           <button
