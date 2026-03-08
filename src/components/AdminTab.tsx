@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getAllUsers, getRanking, removeFromRanking, updateRanking, type UserData, type RankingEntry } from "@/lib/store";
-import { Shield, Users, Trophy, Trash2, Edit2, Save, X } from "lucide-react";
+import { Shield, Users, Trophy, Trash2, Edit2, Save, X, Download, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -12,6 +12,7 @@ const AdminTab = () => {
   const [ranking, setRanking] = useState<RankingEntry[]>(getRanking());
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [editScore, setEditScore] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const refreshData = () => {
     setUsers(getAllUsers());
@@ -42,11 +43,62 @@ const AdminTab = () => {
     refreshData();
   };
 
+  const filteredUsers = users.filter(
+    (u) =>
+      u.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.cpf.includes(searchTerm.replace(/\D/g, ""))
+  );
+
+  const filteredRanking = ranking.filter(
+    (r) =>
+      r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.cpf.includes(searchTerm.replace(/\D/g, ""))
+  );
+
+  const exportCSV = () => {
+    const allUsers = getAllUsers();
+    const allRanking = getRanking();
+
+    let csv = "=== FUNCIONÁRIOS ===\nNome,CPF,Nascimento\n";
+    allUsers.forEach((u) => {
+      csv += `"${u.nome}","${u.cpf}","${u.nascimento}"\n`;
+    });
+
+    csv += "\n=== RANKING ===\nPosição,Nome,CPF,Loja,Pontuação(%),Acertos,Total\n";
+    allRanking.forEach((r, i) => {
+      csv += `${i + 1},"${r.name}","${r.cpf}","${r.loja}",${r.percentage},${r.score},${r.total}\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `nagumo_academy_dados_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="animate-fade-in space-y-4 p-4">
-      <div className="flex items-center gap-2">
-        <Shield size={20} className="text-primary" />
-        <h2 className="font-display text-lg font-bold text-foreground">Painel Administrativo</h2>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Shield size={20} className="text-primary" />
+          <h2 className="font-display text-lg font-bold text-foreground">Painel Administrativo</h2>
+        </div>
+        <Button onClick={exportCSV} size="sm" variant="outline" className="border-border text-foreground">
+          <Download size={14} className="mr-1" /> Exportar CSV
+        </Button>
+      </div>
+
+      {/* Search */}
+      <div className="relative">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Buscar por nome ou CPF..."
+          className="border-border bg-secondary pl-9 text-foreground placeholder:text-muted-foreground"
+        />
       </div>
 
       {/* View Switcher */}
@@ -57,7 +109,7 @@ const AdminTab = () => {
           onClick={() => setView("users")}
           className={view === "users" ? "bg-primary text-primary-foreground" : "border-border text-foreground"}
         >
-          <Users size={16} className="mr-1" /> Cadastros ({users.length})
+          <Users size={16} className="mr-1" /> Cadastros ({filteredUsers.length})
         </Button>
         <Button
           variant={view === "ranking" ? "default" : "outline"}
@@ -65,7 +117,7 @@ const AdminTab = () => {
           onClick={() => { setView("ranking"); refreshData(); }}
           className={view === "ranking" ? "bg-primary text-primary-foreground" : "border-border text-foreground"}
         >
-          <Trophy size={16} className="mr-1" /> Ranking ({ranking.length})
+          <Trophy size={16} className="mr-1" /> Ranking ({filteredRanking.length})
         </Button>
       </div>
 
@@ -76,10 +128,10 @@ const AdminTab = () => {
             <span>CPF</span>
             <span>Nascimento</span>
           </div>
-          {users.length === 0 ? (
-            <div className="p-6 text-center text-sm text-muted-foreground">Nenhum cadastro ainda.</div>
+          {filteredUsers.length === 0 ? (
+            <div className="p-6 text-center text-sm text-muted-foreground">Nenhum cadastro encontrado.</div>
           ) : (
-            users.map((u, i) => (
+            filteredUsers.map((u, i) => (
               <div
                 key={i}
                 className={`grid grid-cols-[1fr_100px_100px] gap-2 px-4 py-2.5 text-sm ${
@@ -108,10 +160,10 @@ const AdminTab = () => {
             <span className="text-right">Loja</span>
             <span className="text-right">Ações</span>
           </div>
-          {ranking.length === 0 ? (
+          {filteredRanking.length === 0 ? (
             <div className="p-6 text-center text-sm text-muted-foreground">Ranking vazio.</div>
           ) : (
-            ranking.map((entry, i) => (
+            filteredRanking.map((entry, i) => (
               <div
                 key={i}
                 className={`grid grid-cols-[40px_1fr_60px_60px_60px] items-center gap-2 px-4 py-2.5 text-sm ${

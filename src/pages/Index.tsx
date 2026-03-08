@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import LoginScreen from "@/components/LoginScreen";
 import Header from "@/components/Header";
 import BottomTabs, { type TabId } from "@/components/BottomTabs";
@@ -6,13 +6,18 @@ import CourseTab from "@/components/CourseTab";
 import QuizTab from "@/components/QuizTab";
 import ResultScreen from "@/components/ResultScreen";
 import RankingTab from "@/components/RankingTab";
+import CommentsTab from "@/components/CommentsTab";
 import AdminTab from "@/components/AdminTab";
-import { getUser, setUser, type UserData } from "@/lib/store";
+import { getUser, setUser, initTheme, type UserData } from "@/lib/store";
 
 const Index = () => {
   const [userData, setUserData] = useState<UserData | null>(getUser());
   const [activeTab, setActiveTab] = useState<TabId>("curso");
   const [quizResult, setQuizResult] = useState<{ score: number; total: number } | null>(null);
+
+  useEffect(() => {
+    initTheme();
+  }, []);
 
   const handleLogin = useCallback((user: UserData) => {
     setUser(user);
@@ -56,6 +61,7 @@ const Index = () => {
           />
         )}
         {activeTab === "ranking" && <RankingTab />}
+        {activeTab === "comentarios" && <CommentsTab />}
         {activeTab === "admin" && userData.isAdmin && <AdminTab />}
       </main>
 
