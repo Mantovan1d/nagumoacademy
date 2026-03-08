@@ -1,6 +1,6 @@
-import { Video, FileText, Trophy, Shield, MessageCircle } from "lucide-react";
+import { Video, FileText, Trophy, Shield, MessageCircle, Gift } from "lucide-react";
 
-export type TabId = "curso" | "quiz" | "ranking" | "comentarios" | "admin";
+export type TabId = "curso" | "quiz" | "ranking" | "premiacoes" | "comentarios" | "admin";
 
 interface BottomTabsProps {
   active: TabId;
@@ -12,6 +12,7 @@ const baseTabs: { id: TabId; label: string; icon: typeof Video }[] = [
   { id: "curso", label: "Curso", icon: Video },
   { id: "quiz", label: "Quiz", icon: FileText },
   { id: "ranking", label: "Ranking", icon: Trophy },
+  { id: "premiacoes", label: "Prêmios", icon: Gift },
   { id: "comentarios", label: "Comentários", icon: MessageCircle },
 ];
 

@@ -8,6 +8,7 @@ import ResultScreen from "@/components/ResultScreen";
 import RankingTab from "@/components/RankingTab";
 import CommentsTab from "@/components/CommentsTab";
 import AdminTab from "@/components/AdminTab";
+import PremiacoesTab from "@/components/PremiacoesTab";
 import { getUser, setUser, initTheme, type UserData } from "@/lib/store";
 
 const Index = () => {
@@ -61,6 +62,7 @@ const Index = () => {
           />
         )}
         {activeTab === "ranking" && <RankingTab />}
+        {activeTab === "premiacoes" && <PremiacoesTab />}
         {activeTab === "comentarios" && <CommentsTab />}
         {activeTab === "admin" && userData.isAdmin && <AdminTab />}
       </main>
