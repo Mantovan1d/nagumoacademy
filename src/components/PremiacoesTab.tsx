@@ -1,10 +1,14 @@
 import { getUser, getRanking } from "@/lib/store";
+import premioMochila from "@/assets/premio-mochila.png";
+import premioBag from "@/assets/premio-bag.png";
+import premioFardo from "@/assets/premio-fardo.png";
+import premioBone from "@/assets/premio-bone.png";
 
 const premios = [
-  { icon: "🎒", titulo: "MOCHILA", desc: "MONSTER ENERGY" },
-  { icon: "👝", titulo: "BAG DE PEITO", desc: "MONSTER ENERGY" },
-  { icon: "📦", titulo: "FARDO", desc: "MONSTER ENERGY" },
-  { icon: "🧢", titulo: "BONÉ", desc: "MONSTER ENERGY" },
+  { img: premioMochila, titulo: "MOCHILA", desc: "MONSTER ENERGY" },
+  { img: premioBag, titulo: "BAG DE PEITO", desc: "MONSTER ENERGY" },
+  { img: premioFardo, titulo: "FARDO", desc: "MONSTER ENERGY" },
+  { img: premioBone, titulo: "BONÉ", desc: "MONSTER ENERGY" },
 ];
 
 const PremiacoesTab = () => {
@@ -15,64 +19,100 @@ const PremiacoesTab = () => {
     : 0;
 
   return (
-    <div className="animate-fade-in min-h-[calc(100vh-200px)] p-6">
-      <div className="mx-auto max-w-[600px] space-y-8">
-        {/* Título */}
+    <div className="animate-fade-in relative min-h-[calc(100vh-200px)] overflow-hidden">
+      {/* Dark particle/red glow background */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(ellipse at 50% 0%, hsl(var(--nagumo-red) / 0.15) 0%, transparent 60%),
+            radial-gradient(ellipse at 0% 50%, hsl(var(--nagumo-red) / 0.08) 0%, transparent 50%),
+            radial-gradient(ellipse at 100% 50%, hsl(var(--nagumo-red) / 0.08) 0%, transparent 50%)
+          `,
+        }}
+      />
+
+      <div className="relative z-10 mx-auto max-w-[600px] space-y-6 p-4">
+        {/* Header */}
         <div className="text-center">
-          <h1 className="font-display text-4xl font-black uppercase text-primary sm:text-5xl">
+          <h1 className="font-display text-3xl font-black uppercase text-foreground sm:text-4xl">
             🏆 SORTEIO
           </h1>
-          <p className="mt-2 font-display text-sm font-semibold tracking-widest text-muted-foreground">
-            para os melhores colocados
+          <p className="mt-1 font-display text-base font-bold uppercase text-foreground sm:text-lg">
+            PARA OS{" "}
+            <span className="text-primary">MELHORES COLOCADOS</span>
           </p>
         </div>
 
-        {/* Grid de produtos flutuando */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Prize grid */}
+        <div className="grid grid-cols-2 gap-3">
           {premios.map((p, i) => (
             <div
               key={i}
-              className="group flex cursor-default flex-col items-center rounded-2xl border-2 border-primary bg-card p-6 text-center transition-all duration-300 hover:-translate-y-2"
+              className="group relative flex flex-col items-center overflow-hidden rounded-xl border border-primary/40 bg-card p-4 transition-all duration-300 hover:-translate-y-1"
               style={{
-                boxShadow: "0 10px 30px hsl(var(--nagumo-red) / 0.3)",
-                animation: `float 3s ease-in-out ${i * 0.5}s infinite`,
+                boxShadow:
+                  "0 0 20px hsl(var(--nagumo-red) / 0.25), inset 0 0 30px hsl(var(--nagumo-red) / 0.05)",
+                animation: `float 3s ease-in-out ${i * 0.4}s infinite`,
               }}
             >
-              <span className="text-6xl drop-shadow-lg">{p.icon}</span>
-              <h3 className="mt-3 font-display text-lg font-extrabold uppercase text-foreground">
+              {/* Red glow corners */}
+              <div
+                className="pointer-events-none absolute inset-0 rounded-xl"
+                style={{
+                  background: `
+                    radial-gradient(circle at 0% 0%, hsl(var(--nagumo-red) / 0.2) 0%, transparent 40%),
+                    radial-gradient(circle at 100% 0%, hsl(var(--nagumo-red) / 0.2) 0%, transparent 40%),
+                    radial-gradient(circle at 0% 100%, hsl(var(--nagumo-red) / 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at 100% 100%, hsl(var(--nagumo-red) / 0.15) 0%, transparent 40%)
+                  `,
+                }}
+              />
+
+              <img
+                src={p.img}
+                alt={p.titulo}
+                className="relative z-10 h-32 w-32 object-contain drop-shadow-lg sm:h-40 sm:w-40"
+                loading="lazy"
+              />
+              <h3 className="relative z-10 mt-3 font-display text-sm font-extrabold uppercase text-foreground sm:text-base">
                 {p.titulo}
               </h3>
-              <p className="font-display text-[11px] font-semibold tracking-[2px] text-primary">
+              <p className="relative z-10 font-display text-[10px] font-semibold tracking-[2px] text-primary sm:text-xs">
                 {p.desc}
               </p>
             </div>
           ))}
         </div>
 
-        {/* Sorteio */}
-        <div className="rounded-2xl border-2 border-primary bg-card p-8 text-center"
-          style={{ boxShadow: "0 0 30px hsl(var(--nagumo-red) / 0.2)" }}
+        {/* Sorteio section */}
+        <div
+          className="rounded-xl border border-primary/40 bg-card p-6 text-center"
+          style={{
+            boxShadow: "0 0 30px hsl(var(--nagumo-red) / 0.2)",
+          }}
         >
-          <div className="mb-4 flex justify-center gap-6 text-4xl">
-            <span>🥇</span>
-            <span>🥈</span>
-            <span>🥉</span>
+          <div className="mb-3 flex justify-center gap-4 text-3xl sm:text-4xl">
+            <span>🏆</span>
+            <span className="opacity-70">🏆</span>
+            <span className="opacity-50">🏆</span>
           </div>
-          <h2 className="font-display text-lg font-black uppercase tracking-wider text-primary sm:text-xl">
+          <h2 className="font-display text-base font-black uppercase text-foreground sm:text-lg">
             OS 3 MELHORES COLOCADOS
           </h2>
-          <p className="mt-1 font-display text-base font-bold text-foreground sm:text-lg">
-            CONCORREM A UM SORTEIO
+          <p className="mt-1 font-display text-sm font-bold uppercase text-foreground sm:text-base">
+            CONCORREM A UM{" "}
+            <span className="text-primary">SORTEIO</span>
           </p>
-          <p className="mt-1 text-lg font-bold text-foreground sm:text-xl">
-            PARA LEVAR{" "}
-            <span className="font-black text-primary">TUDO!</span>
+          <p className="font-display text-sm font-bold uppercase text-foreground sm:text-base">
+            PARA{" "}
+            <span className="font-black text-primary">LEVAR TUDO!</span>
           </p>
         </div>
 
-        {/* Posição do usuário */}
+        {/* User position */}
         {userPos > 0 && (
-          <div className="flex flex-wrap items-center gap-4 rounded-xl border border-primary bg-card p-4">
+          <div className="flex flex-wrap items-center gap-4 rounded-xl border border-primary/40 bg-card p-4">
             <span className="font-display text-sm font-semibold text-foreground">
               📊 SUA POSIÇÃO:{" "}
               <span className="text-primary">{userPos}º LUGAR</span>
