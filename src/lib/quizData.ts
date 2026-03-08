@@ -6,7 +6,8 @@ export interface Question {
 }
 
 export const quizTitle = "Cross Merchandising no Supermercado";
-export const videoUrl = "https://www.youtube.com/embed/dQw4w9WgXcQ";
+export const videoId = "YFX-uZo9Ekk";
+export const videoUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0`;
 export const videoDescription =
   "Aprenda como organizar produtos complementares para aumentar as vendas e melhorar a experiência do cliente no supermercado.";
 export const videoDuration = "3min 42s";

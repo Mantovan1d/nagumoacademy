@@ -1,8 +1,15 @@
 import { Video, Clock, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { videoUrl, quizTitle, videoDescription, videoDuration, questions } from "@/lib/quizData";
+import { quizTitle, videoId, videoDescription, videoDuration, questions } from "@/lib/quizData";
 import { hasWatchedVideo, setVideoWatched } from "@/lib/store";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
 
 interface CourseTabProps {
   onGoToQuiz: () => void;
@@ -10,27 +17,63 @@ interface CourseTabProps {
 
 const CourseTab = ({ onGoToQuiz }: CourseTabProps) => {
   const [watched, setWatched] = useState(hasWatchedVideo());
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(watched ? 100 : 0);
+  const playerRef = useRef<any>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const checkProgress = useCallback(() => {
+    if (!playerRef.current) return;
+    try {
+      const currentTime = playerRef.current.getCurrentTime();
+      const duration = playerRef.current.getDuration();
+      if (duration > 0) {
+        const pct = (currentTime / duration) * 100;
+        setProgress(Math.min(Math.round(pct), 100));
+        if (pct >= 95) {
+          setVideoWatched();
+          setWatched(true);
+          setProgress(100);
+          if (intervalRef.current) clearInterval(intervalRef.current);
+        }
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (watched) {
       setProgress(100);
       return;
     }
-    // Simulate video watching progress
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 80) {
-          setVideoWatched();
-          setWatched(true);
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 2;
+
+    const initPlayer = () => {
+      if (!window.YT?.Player) return;
+      playerRef.current = new window.YT.Player("yt-player", {
+        events: {
+          onStateChange: (event: any) => {
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              if (intervalRef.current) clearInterval(intervalRef.current);
+              intervalRef.current = setInterval(checkProgress, 2000);
+            } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
+              checkProgress();
+            }
+          },
+        },
       });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [watched]);
+    };
+
+    if (window.YT?.Player) {
+      initPlayer();
+    } else {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+      window.onYouTubeIframeAPIReady = initPlayer;
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [watched, checkProgress]);
 
   return (
     <div className="animate-fade-in space-y-4 p-4">
@@ -41,12 +84,14 @@ const CourseTab = ({ onGoToQuiz }: CourseTabProps) => {
 
       {/* Video Embed */}
       <div className="overflow-hidden rounded-lg border border-border">
-        <div className="relative aspect-video w-full bg-secondary">
+        <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
           <iframe
-            src={videoUrl}
+            id="yt-player"
+            src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&controls=0&disablekb=1&fs=0&modestbranding=1&rel=0&origin=${window.location.origin}`}
             title={quizTitle}
-            className="h-full w-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            className="absolute inset-0 h-full w-full"
+            allow="autoplay; encrypted-media"
+            referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
           />
         </div>
@@ -94,7 +139,7 @@ const CourseTab = ({ onGoToQuiz }: CourseTabProps) => {
         className="w-full bg-primary font-display font-semibold text-primary-foreground hover:bg-nagumo-red-hover disabled:opacity-40"
         size="lg"
       >
-        {watched ? "FAZER QUIZ" : "Assista o vídeo para liberar o quiz"}
+        {watched ? "FAZER QUIZ" : "Assista ao vídeo (95%) para liberar o quiz"}
       </Button>
     </div>
   );

@@ -17,12 +17,21 @@ export interface RankingEntry {
   timestamp: number;
 }
 
+export interface CommentEntry {
+  name: string;
+  cpf: string;
+  text: string;
+  timestamp: number;
+}
+
 const KEYS = {
   USER: "nagumo_user",
   USERS_DB: "nagumo_users_db",
   VIDEO_WATCHED: "nagumo_video_watched",
   ATTEMPTS: "nagumo_attempts",
   RANKING: "nagumo_ranking",
+  THEME: "nagumo_theme",
+  COMMENTS: "nagumo_comments",
 };
 
 const ADMIN_CPF = "85455215370";
@@ -32,6 +41,26 @@ export function isAdminCredentials(cpf: string, nascimento: string): boolean {
   return cpf === ADMIN_CPF && nascimento === ADMIN_NASCIMENTO;
 }
 
+// Theme
+export function getTheme(): "dark" | "light" {
+  return (localStorage.getItem(KEYS.THEME) as "dark" | "light") || "dark";
+}
+
+export function setTheme(theme: "dark" | "light") {
+  localStorage.setItem(KEYS.THEME, theme);
+  if (theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+}
+
+export function initTheme() {
+  const theme = getTheme();
+  setTheme(theme);
+}
+
+// User
 export function getUser(): UserData | null {
   try {
     const data = localStorage.getItem(KEYS.USER);
@@ -44,7 +73,6 @@ export function getUser(): UserData | null {
 
 export function setUser(data: UserData) {
   localStorage.setItem(KEYS.USER, JSON.stringify(data));
-  // Also save to users DB
   const users = getAllUsers();
   const existing = users.find((u) => u.cpf === data.cpf);
   if (!existing) {
@@ -67,6 +95,7 @@ export function getAllUsers(): UserData[] {
   }
 }
 
+// Video
 export function hasWatchedVideo(): boolean {
   return localStorage.getItem(KEYS.VIDEO_WATCHED) === "true";
 }
@@ -75,6 +104,7 @@ export function setVideoWatched() {
   localStorage.setItem(KEYS.VIDEO_WATCHED, "true");
 }
 
+// Attempts
 export function getAttempts(): number {
   return parseInt(localStorage.getItem(KEYS.ATTEMPTS) || "0", 10);
 }
@@ -83,6 +113,7 @@ export function incrementAttempts() {
   localStorage.setItem(KEYS.ATTEMPTS, String(getAttempts() + 1));
 }
 
+// Ranking
 export function getRanking(): RankingEntry[] {
   try {
     return JSON.parse(localStorage.getItem(KEYS.RANKING) || "[]");
@@ -107,4 +138,24 @@ export function updateRanking(newRanking: RankingEntry[]) {
 export function removeFromRanking(cpf: string) {
   const ranking = getRanking().filter((r) => r.cpf !== cpf);
   localStorage.setItem(KEYS.RANKING, JSON.stringify(ranking));
+}
+
+// Comments
+export function getComments(): CommentEntry[] {
+  try {
+    return JSON.parse(localStorage.getItem(KEYS.COMMENTS) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+export function addComment(entry: CommentEntry) {
+  const comments = getComments();
+  comments.unshift(entry);
+  localStorage.setItem(KEYS.COMMENTS, JSON.stringify(comments));
+}
+
+export function removeComment(timestamp: number) {
+  const comments = getComments().filter((c) => c.timestamp !== timestamp);
+  localStorage.setItem(KEYS.COMMENTS, JSON.stringify(comments));
 }
