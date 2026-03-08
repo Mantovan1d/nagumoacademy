@@ -62,6 +62,7 @@ const Index = () => {
           />
         )}
         {activeTab === "ranking" && <RankingTab />}
+        {activeTab === "premiacoes" && <PremiacoesTab />}
         {activeTab === "comentarios" && <CommentsTab />}
         {activeTab === "admin" && userData.isAdmin && <AdminTab />}
       </main>
