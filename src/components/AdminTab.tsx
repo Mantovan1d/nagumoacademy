@@ -129,10 +129,11 @@ const AdminTab = () => {
 
       {view === "users" && (
         <div className="overflow-hidden rounded-lg border border-border">
-          <div className="grid grid-cols-[1fr_100px_100px] gap-2 border-b border-border bg-secondary px-4 py-2 text-xs font-semibold text-muted-foreground">
+          <div className="grid grid-cols-[1fr_100px_100px_40px] gap-2 border-b border-border bg-secondary px-4 py-2 text-xs font-semibold text-muted-foreground">
             <span>Nome</span>
             <span>CPF</span>
             <span>Nascimento</span>
+            <span></span>
           </div>
           {filteredUsers.length === 0 ? (
             <div className="p-6 text-center text-sm text-muted-foreground">Nenhum cadastro encontrado.</div>
