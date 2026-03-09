@@ -82,6 +82,14 @@ const CourseTab = ({ onGoToQuiz }: CourseTabProps) => {
         <h2 className="font-display text-lg font-bold text-foreground">{quizTitle}</h2>
       </div>
 
+      {/* Aviso discreto */}
+      <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-foreground/10 px-4 py-2 backdrop-blur-sm">
+        <span className="text-sm text-primary">⚠️</span>
+        <span className="font-body text-[13px] font-medium text-muted-foreground">
+          Se sair, o vídeo reinicia
+        </span>
+      </div>
+
       {/* Video Embed */}
       <div className="overflow-hidden rounded-lg border border-border">
         <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
