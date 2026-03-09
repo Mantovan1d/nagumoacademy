@@ -95,6 +95,13 @@ export function getAllUsers(): UserData[] {
   }
 }
 
+export function removeUser(cpf: string) {
+  const users = getAllUsers().filter((u) => u.cpf !== cpf);
+  localStorage.setItem(KEYS.USERS_DB, JSON.stringify(users));
+  // Also remove from ranking
+  removeFromRanking(cpf);
+}
+
 // Video
 export function hasWatchedVideo(): boolean {
   return localStorage.getItem(KEYS.VIDEO_WATCHED) === "true";

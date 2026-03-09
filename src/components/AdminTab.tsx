@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getAllUsers, getRanking, removeFromRanking, updateRanking, type UserData, type RankingEntry } from "@/lib/store";
+import { getAllUsers, getRanking, removeFromRanking, removeUser, updateRanking, type UserData, type RankingEntry } from "@/lib/store";
 import { Shield, Users, Trophy, Trash2, Edit2, Save, X, Download, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,12 @@ const AdminTab = () => {
   const refreshData = () => {
     setUsers(getAllUsers());
     setRanking(getRanking());
+  };
+
+  const handleRemoveUser = (cpf: string) => {
+    if (!confirm("Tem certeza que deseja excluir este cadastro? O usuário também será removido do ranking.")) return;
+    removeUser(cpf);
+    refreshData();
   };
 
   const handleRemoveFromRanking = (cpf: string) => {
@@ -123,10 +129,11 @@ const AdminTab = () => {
 
       {view === "users" && (
         <div className="overflow-hidden rounded-lg border border-border">
-          <div className="grid grid-cols-[1fr_100px_100px] gap-2 border-b border-border bg-secondary px-4 py-2 text-xs font-semibold text-muted-foreground">
+          <div className="grid grid-cols-[1fr_100px_100px_40px] gap-2 border-b border-border bg-secondary px-4 py-2 text-xs font-semibold text-muted-foreground">
             <span>Nome</span>
             <span>CPF</span>
             <span>Nascimento</span>
+            <span></span>
           </div>
           {filteredUsers.length === 0 ? (
             <div className="p-6 text-center text-sm text-muted-foreground">Nenhum cadastro encontrado.</div>
@@ -134,7 +141,7 @@ const AdminTab = () => {
             filteredUsers.map((u, i) => (
               <div
                 key={i}
-                className={`grid grid-cols-[1fr_100px_100px] gap-2 px-4 py-2.5 text-sm ${
+                className={`grid grid-cols-[1fr_100px_100px_40px] items-center gap-2 px-4 py-2.5 text-sm ${
                   i % 2 === 0 ? "bg-card" : "bg-secondary/50"
                 } ${u.isAdmin ? "border-l-2 border-l-primary" : ""}`}
               >
@@ -145,6 +152,17 @@ const AdminTab = () => {
                   {u.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.***.**$3-$4")}
                 </span>
                 <span className="text-xs text-muted-foreground">{u.nascimento}</span>
+                <div className="flex justify-end">
+                  {!u.isAdmin && (
+                    <button
+                      onClick={() => handleRemoveUser(u.cpf)}
+                      className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-destructive"
+                      title="Excluir cadastro"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
               </div>
             ))
           )}
