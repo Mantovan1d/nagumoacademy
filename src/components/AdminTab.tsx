@@ -19,6 +19,12 @@ const AdminTab = () => {
     setRanking(getRanking());
   };
 
+  const handleRemoveUser = (cpf: string) => {
+    if (!confirm("Tem certeza que deseja excluir este cadastro? O usuário também será removido do ranking.")) return;
+    removeUser(cpf);
+    refreshData();
+  };
+
   const handleRemoveFromRanking = (cpf: string) => {
     removeFromRanking(cpf);
     refreshData();
