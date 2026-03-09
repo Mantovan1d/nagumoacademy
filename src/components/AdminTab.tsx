@@ -141,7 +141,7 @@ const AdminTab = () => {
             filteredUsers.map((u, i) => (
               <div
                 key={i}
-                className={`grid grid-cols-[1fr_100px_100px] gap-2 px-4 py-2.5 text-sm ${
+                className={`grid grid-cols-[1fr_100px_100px_40px] items-center gap-2 px-4 py-2.5 text-sm ${
                   i % 2 === 0 ? "bg-card" : "bg-secondary/50"
                 } ${u.isAdmin ? "border-l-2 border-l-primary" : ""}`}
               >
@@ -152,6 +152,17 @@ const AdminTab = () => {
                   {u.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.***.**$3-$4")}
                 </span>
                 <span className="text-xs text-muted-foreground">{u.nascimento}</span>
+                <div className="flex justify-end">
+                  {!u.isAdmin && (
+                    <button
+                      onClick={() => handleRemoveUser(u.cpf)}
+                      className="rounded p-1 text-muted-foreground hover:bg-secondary hover:text-destructive"
+                      title="Excluir cadastro"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
               </div>
             ))
           )}
