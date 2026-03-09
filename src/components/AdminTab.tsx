@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getAllUsers, getRanking, removeFromRanking, updateRanking, type UserData, type RankingEntry } from "@/lib/store";
+import { getAllUsers, getRanking, removeFromRanking, removeUser, updateRanking, type UserData, type RankingEntry } from "@/lib/store";
 import { Shield, Users, Trophy, Trash2, Edit2, Save, X, Download, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
