@@ -83,11 +83,19 @@ const CourseTab = ({ onGoToQuiz }: CourseTabProps) => {
       </div>
 
       {/* Aviso discreto */}
-      <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-foreground/10 px-4 py-2 backdrop-blur-sm">
-        <span className="text-sm text-primary">⚠️</span>
-        <span className="font-body text-[13px] font-medium text-muted-foreground">
-          Se sair, o vídeo reinicia
-        </span>
+      <div className="flex flex-wrap gap-2">
+        <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-foreground/10 px-4 py-2 backdrop-blur-sm">
+          <span className="text-sm text-primary">⚠️</span>
+          <span className="font-body text-[13px] font-medium text-muted-foreground">
+            Se sair, o vídeo reinicia
+          </span>
+        </div>
+        <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-foreground/10 px-4 py-2 backdrop-blur-sm">
+          <span className="text-sm text-primary">🎓</span>
+          <span className="font-body text-[13px] font-medium text-muted-foreground">
+            Complete o vídeo para liberar o quiz
+          </span>
+        </div>
       </div>
 
       {/* Video Embed */}
